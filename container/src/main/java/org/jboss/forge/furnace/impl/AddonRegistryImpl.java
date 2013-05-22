@@ -233,7 +233,7 @@ public class AddonRegistryImpl implements AddonRegistry
             if (starting.get() == -1)
                starting.set(0);
 
-            Set<AddonId> enabled = getAllEnabled();
+            Set<AddonId> enabled = getAllEnabledInAllRepositories();
 
             tree.breadthFirst(new MarkDisabledLoadedAddonsDirtyVisitor(tree, enabled));
 
@@ -275,7 +275,7 @@ public class AddonRegistryImpl implements AddonRegistry
       });
    }
 
-   private Set<AddonId> getAllEnabled()
+   private Set<AddonId> getAllEnabledInAllRepositories()
    {
       Set<AddonId> result = new HashSet<AddonId>();
       for (AddonRepository repository : forge.getRepositories())

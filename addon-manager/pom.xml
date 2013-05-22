@@ -19,6 +19,7 @@
       <module>tests</module>
       <module>example</module>
       <module>example2</module>
+      <module>example3</module>
    </modules>
 
 
