@@ -10,7 +10,9 @@ package org.jboss.forge.addon.manager.impl;
 import javax.inject.Inject;
 
 import org.jboss.forge.addon.dependencies.AddonDependencyResolver;
+import org.jboss.forge.addon.dependencies.DependencyMetadata;
 import org.jboss.forge.addon.dependencies.DependencyNode;
+import org.jboss.forge.addon.dependencies.DependencyResolver;
 import org.jboss.forge.addon.dependencies.builder.DependencyQueryBuilder;
 import org.jboss.forge.addon.manager.AddonManager;
 import org.jboss.forge.addon.manager.DisableRequest;
@@ -31,22 +33,25 @@ public class AddonManagerImpl implements AddonManager
 {
    private AddonDependencyResolver resolver;
    private Furnace forge;
+   private DependencyResolver dependencyResolver;
 
    @Inject
-   public AddonManagerImpl(Furnace forge, AddonDependencyResolver resolver)
+   public AddonManagerImpl(Furnace forge, AddonDependencyResolver resolver, DependencyResolver dependencyResolver)
    {
       this.forge = forge;
       this.resolver = resolver;
+      this.dependencyResolver = dependencyResolver;
    }
 
    @Override
    public InstallRequest install(AddonId id)
    {
       String coordinates = id.getName() + ":jar:forge-addon:" + id.getVersion();
-      DependencyNode requestedAddonNode = resolver.resolveAddonDependencyHierarchy(DependencyQueryBuilder
-               .create(coordinates));
+      DependencyQueryBuilder query = DependencyQueryBuilder.create(coordinates);
+      DependencyNode requestedAddonNode = resolver.resolveAddonDependencyHierarchy(query);
+      DependencyMetadata metadata = dependencyResolver.resolveDependencyMetadata(query);
 
-      return new InstallRequestImpl(this, forge, requestedAddonNode);
+      return new InstallRequestImpl(this, forge, requestedAddonNode, metadata);
    }
 
    @Override

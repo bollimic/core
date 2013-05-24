@@ -10,7 +10,6 @@ import org.jboss.forge.addon.ui.wizard.UIWizard;
 import org.jboss.forge.arquillian.Addon;
 import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
-import org.jboss.forge.furnace.addons.AddonId;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.forge.furnace.services.ExportedInstance;
 import org.jboss.forge.furnace.services.ServiceRegistry;
@@ -33,7 +32,7 @@ public class UIWizardDiscoveryTest
                .create(ForgeArchive.class)
                .addClasses(MyFirstWizard.class)
                .addBeansXML()
-               .addAsAddonDependencies(AddonDependencyEntry.create(AddonId.from("org.jboss.forge.addon:ui", "2.0.0-SNAPSHOT")));
+               .addAsAddonDependencies(AddonDependencyEntry.create("org.jboss.forge.addon:ui", "2.0.0-SNAPSHOT"));
 
       return archive;
    }

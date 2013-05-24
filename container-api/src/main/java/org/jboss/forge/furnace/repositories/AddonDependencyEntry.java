@@ -7,8 +7,11 @@
 package org.jboss.forge.furnace.repositories;
 
 import org.jboss.forge.furnace.addons.Addon;
-import org.jboss.forge.furnace.addons.AddonId;
 import org.jboss.forge.furnace.util.Assert;
+import org.jboss.forge.furnace.versions.SingleVersion;
+import org.jboss.forge.furnace.versions.SingleVersionRange;
+import org.jboss.forge.furnace.versions.Version;
+import org.jboss.forge.furnace.versions.VersionRange;
 
 /**
  * Represents an {@link Addon} dependency as specified in its originating {@link AddonRepository}.
@@ -17,36 +20,109 @@ import org.jboss.forge.furnace.util.Assert;
  */
 public class AddonDependencyEntry
 {
-   private AddonId id;
+   private String name;
+   private Version apiVersion;
+   private VersionRange version;
    private boolean exported;
    private boolean optional;
 
-   public AddonId getId()
-   {
-      return id;
-   }
-
+   /**
+    * Return <code>true</code> if this dependency is optional.
+    */
    public boolean isOptional()
    {
       return optional;
    }
 
+   /**
+    * Return <code>true</code> if this dependency is exported.
+    */
    public boolean isExported()
    {
       return exported;
    }
 
-   public static AddonDependencyEntry create(AddonId id)
+   /**
+    * Get the dependency name.
+    */
+   public String getName()
    {
-      return create(id, false, false);
+      return name;
    }
 
-   public static AddonDependencyEntry create(AddonId id, boolean exported, boolean optional)
+   /**
+    * Get the dependency {@link VersionRange}.
+    */
+   public VersionRange getVersion()
    {
-      Assert.notNull(id, "AddonId must not be null.");
+      return version;
+   }
+
+   /**
+    * Get the required API version.
+    * <p>
+    * TODO This should probably be a {@link VersionRange}
+    */
+   public Version getApiVersion()
+   {
+      return apiVersion;
+   }
+
+   /**
+    * Create a new {@link AddonDependencyEntry} with the given attributes.
+    */
+   public static AddonDependencyEntry create(String name, String version)
+   {
+      return create(name, new SingleVersionRange(new SingleVersion(version)), null, false, false);
+   }
+
+   /**
+    * Create a new {@link AddonDependencyEntry} with the given attributes.
+    */
+   public static AddonDependencyEntry create(String name, String version, boolean exported,
+            boolean optional)
+   {
+      return create(name, new SingleVersionRange(new SingleVersion(version)), null, exported, optional);
+   }
+
+   /**
+    * Create a new {@link AddonDependencyEntry} with the given attributes.
+    */
+   public static AddonDependencyEntry create(String name, VersionRange version)
+   {
+      return create(name, version, null, false, false);
+   }
+
+   /**
+    * Create a new {@link AddonDependencyEntry} with the given attributes.
+    */
+   public static AddonDependencyEntry create(String name, VersionRange version, Version apiVersion)
+   {
+      return create(name, version, apiVersion, false, false);
+   }
+
+   /**
+    * Create a new {@link AddonDependencyEntry} with the given attributes.
+    */
+   public static AddonDependencyEntry create(String name, VersionRange version, boolean exported,
+            boolean optional)
+   {
+      return create(name, version, null, exported, optional);
+   }
+
+   /**
+    * Create a new {@link AddonDependencyEntry} with the given attributes.
+    */
+   public static AddonDependencyEntry create(String name, VersionRange version, Version apiVersion, boolean exported,
+            boolean optional)
+   {
+      Assert.notNull(name, "Addon name must not be null.");
+      Assert.notNull(version, "Addon version must not be null.");
 
       AddonDependencyEntry entry = new AddonDependencyEntry();
-      entry.id = id;
+      entry.name = name;
+      entry.version = version;
+      entry.apiVersion = apiVersion;
       entry.exported = exported;
       entry.optional = optional;
       return entry;
@@ -55,36 +131,8 @@ public class AddonDependencyEntry
    @Override
    public String toString()
    {
-      return id + ": exported=" + exported + ", optional=" + optional;
-   }
-
-   @Override
-   public int hashCode()
-   {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + ((id == null) ? 0 : id.hashCode());
-      return result;
-   }
-
-   @Override
-   public boolean equals(Object obj)
-   {
-      if (this == obj)
-         return true;
-      if (obj == null)
-         return false;
-      if (getClass() != obj.getClass())
-         return false;
-      AddonDependencyEntry other = (AddonDependencyEntry) obj;
-      if (id == null)
-      {
-         if (other.id != null)
-            return false;
-      }
-      else if (!id.equals(other.id))
-         return false;
-      return true;
+      return "name=" + name + ", version=" + version + ", exported=" + exported + ", optional="
+               + optional + ", apiVersion=" + apiVersion;
    }
 
 }

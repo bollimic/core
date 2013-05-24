@@ -24,7 +24,7 @@ public class ClassLoadingOnlyAddonTest
       ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
                .addClass(PublisherService.class)
                .addBeansXML()
-               .addAsAddonDependencies(AddonDependencyEntry.create(AddonId.from("noncdi", "1")));
+               .addAsAddonDependencies(AddonDependencyEntry.create("noncdi", "1"));
 
       return archive;
    }

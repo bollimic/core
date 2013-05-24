@@ -22,7 +22,6 @@ import org.jboss.forge.addon.ui.util.InputComponents;
 import org.jboss.forge.arquillian.Addon;
 import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
-import org.jboss.forge.furnace.addons.AddonId;
 import org.jboss.forge.furnace.addons.AddonRegistry;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -43,8 +42,9 @@ public class ManyValuesInjectionTest
                .addBeansXML()
                .addClasses(Career.class)
                .addAsAddonDependencies(
-                        AddonDependencyEntry.create(AddonId.from("org.jboss.forge.addon:convert", "2.0.0-SNAPSHOT")),
-                        AddonDependencyEntry.create(AddonId.from("org.jboss.forge.addon:ui", "2.0.0-SNAPSHOT")));
+                        AddonDependencyEntry.create("org.jboss.forge.addon:convert", "2.0.0-SNAPSHOT"),
+                        AddonDependencyEntry.create("org.jboss.forge.addon:ui", "2.0.0-SNAPSHOT")
+               );
 
       return archive;
    }
@@ -70,7 +70,8 @@ public class ManyValuesInjectionTest
    public void testIterableConversion()
    {
       Iterable<String> stringIterable = Arrays.asList("TECHNOLOGY", "MEDICINE");
-      InputComponents.setValueFor(addonRegistry.getExportedInstance(ConverterFactory.class).get(), (InputComponent) inputMany, stringIterable);
+      InputComponents.setValueFor(addonRegistry.getExportedInstance(ConverterFactory.class).get(),
+               (InputComponent) inputMany, stringIterable);
       Iterable<Career> value = inputMany.getValue();
       Assert.assertNotNull(value);
       Iterator<Career> iterator = value.iterator();

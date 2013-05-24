@@ -28,7 +28,7 @@ public class AddonEventPropagationNonRemoteTest
                .create(ForgeArchive.class)
                .addClasses(EventService.class)
                .addBeansXML()
-               .addAsAddonDependencies(AddonDependencyEntry.create(AddonId.from("dependency", "1")));
+               .addAsAddonDependencies(AddonDependencyEntry.create("dependency", "1"));
 
       return archive;
    }

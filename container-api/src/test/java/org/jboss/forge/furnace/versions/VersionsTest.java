@@ -6,8 +6,6 @@
  */
 package org.jboss.forge.furnace.versions;
 
-import org.jboss.forge.furnace.versions.SingleVersion;
-import org.jboss.forge.furnace.versions.Versions;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -21,7 +19,13 @@ public class VersionsTest
    @Test
    public void testAreEqual()
    {
-      Assert.assertTrue(Versions.areEqual(new SingleVersion("1"), new SingleVersion("1")));
+      Assert.assertEquals(new SingleVersion("1"), new SingleVersion("1"));
+      Assert.assertEquals(new SingleVersion("1.1"), new SingleVersion("1.1"));
+      Assert.assertEquals(new SingleVersion("1.1.1"), new SingleVersion("1.1.1"));
+      Assert.assertEquals(new SingleVersion("1.1.1-SNAPSHOT"), new SingleVersion("1.1.1-SNAPSHOT"));
+      Assert.assertNotEquals(new SingleVersion("1"), new SingleVersion("2"));
+      Assert.assertNotEquals(new SingleVersion("1.1"), new SingleVersion("1.1.1"));
+      Assert.assertNotEquals(new SingleVersion("1.1.1-SNAPSHOT"), new SingleVersion("1.1.1"));
    }
 
 }

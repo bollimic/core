@@ -14,11 +14,6 @@ public class ContainerException extends RuntimeException
 {
    private static final long serialVersionUID = 5266075954460779189L;
 
-   public ContainerException()
-   {
-      super();
-   }
-
    public ContainerException(String message, Throwable cause)
    {
       super(message, cause);
@@ -28,10 +23,4 @@ public class ContainerException extends RuntimeException
    {
       super(message);
    }
-
-   public ContainerException(Throwable cause)
-   {
-      super(cause);
-   }
-
 }

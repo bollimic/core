@@ -15,6 +15,11 @@ import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.forge.addon.dependencies.DependencyMetadata;
+import org.jboss.forge.addon.dependencies.DependencyQuery;
+import org.jboss.forge.addon.dependencies.DependencyResolver;
+import org.jboss.forge.addon.dependencies.builder.DependencyBuilder;
+import org.jboss.forge.addon.dependencies.builder.DependencyQueryBuilder;
 import org.jboss.forge.arquillian.Addon;
 import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
@@ -23,10 +28,8 @@ import org.jboss.forge.furnace.addons.AddonRegistry;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.forge.furnace.repositories.AddonRepository;
 import org.jboss.forge.furnace.util.Addons;
-import org.jboss.forge.furnace.versions.SingleVersion;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -35,7 +38,6 @@ import org.junit.runner.RunWith;
  * 
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
  */
-@Ignore
 @RunWith(Arquillian.class)
 public class AddonManagerVersionRangeTest
 {
@@ -50,7 +52,8 @@ public class AddonManagerVersionRangeTest
                .create(ForgeArchive.class)
                .addBeansXML()
                .addAsAddonDependencies(
-                        AddonDependencyEntry.create(AddonId.from("org.jboss.forge.addon:addon-manager", "2.0.0-SNAPSHOT"))
+                        AddonDependencyEntry.create("org.jboss.forge.addon:addon-manager",
+                                 "2.0.0-SNAPSHOT")
                );
 
       return archive;
@@ -65,40 +68,42 @@ public class AddonManagerVersionRangeTest
    @Inject
    private AddonRepository repository;
 
+   @Inject
+   private DependencyResolver resolver;
+
+   @Test
+   public void testResolveMetadata() throws Exception
+   {
+      DependencyQuery query = DependencyQueryBuilder
+               .create("org.jboss.forge.addon:example3:jar:forge-addon:2.0.0-SNAPSHOT");
+      DependencyMetadata metadata = resolver.resolveDependencyMetadata(query);
+      Assert.assertNotNull(metadata);
+      Assert.assertTrue(metadata.getDependencies().contains(
+               DependencyBuilder.create("junit:junit:4.11")));
+   }
+
    @Test
    public void testInstallingAddonWithSingleOptionalAddonDependency() throws InterruptedException
    {
       int addonCount = registry.getAddons().size();
-      AddonId example = AddonId.fromCoordinates("org.jboss.forge.addon:example3,2.0.0-SNAPSHOT");
-      InstallRequest request = addonManager.install(example);
+      AddonId example3 = AddonId.fromCoordinates("org.jboss.forge.addon:example3,2.0.0-SNAPSHOT");
+      InstallRequest request = addonManager.install(example3);
 
       Assert.assertEquals(0, request.getRequiredAddons().size());
-      Assert.assertEquals(1, request.getOptionalAddons().size());
+      Assert.assertEquals(2, request.getOptionalAddons().size());
 
       request.perform();
 
-      Assert.assertTrue(repository.isEnabled(example));
-      Assert.assertEquals(2, repository.getAddonResources(example).size());
-      Assert.assertTrue(repository.getAddonResources(example).contains(
-               new File(repository.getAddonBaseDir(example), "commons-lang-2.6.jar")));
-      Assert.assertTrue(repository.getAddonResources(example).contains(
-               new File(repository.getAddonBaseDir(example), "example-2.0.0-SNAPSHOT-forge-addon.jar")));
+      Assert.assertTrue(repository.isEnabled(example3));
+      Assert.assertEquals(1, repository.getAddonResources(example3).size());
+      Assert.assertTrue(repository.getAddonResources(example3).contains(
+               new File(repository.getAddonBaseDir(example3), "example3-2.0.0-SNAPSHOT-forge-addon.jar")));
 
-      Set<AddonDependencyEntry> dependencies = repository.getAddonDependencies(example);
-      Assert.assertEquals(1, dependencies.size());
-      AddonDependencyEntry dependency = dependencies.toArray(new AddonDependencyEntry[dependencies.size()])[0];
-      Assert.assertEquals("org.jboss.forge.addon:example2", dependency
-               .getId().getName());
-      Assert.assertEquals(new SingleVersion("2.0.0-SNAPSHOT"), dependency
-               .getId().getVersion());
-      Assert.assertTrue(dependency.isOptional());
-      Assert.assertFalse(dependency.isExported());
+      Set<AddonDependencyEntry> dependencies = repository.getAddonDependencies(example3);
+      Assert.assertEquals(2, dependencies.size());
 
-      Assert.assertTrue(registry.getAddon(AddonId.from("org.jboss.forge.addon:example2", "2.0.0-SNAPSHOT"))
-               .getStatus().isMissing());
-
-      Addons.waitUntilStarted(registry.getAddon(example), 10, TimeUnit.SECONDS);
-      Assert.assertEquals(addonCount + 2, registry.getAddons().size());
+      Addons.waitUntilStarted(registry.getAddon(example3), 10, TimeUnit.SECONDS);
+      Assert.assertEquals(addonCount + 3, registry.getAddons().size());
    }
 
 }

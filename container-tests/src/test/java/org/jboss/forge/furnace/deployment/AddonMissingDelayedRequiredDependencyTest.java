@@ -25,7 +25,7 @@ public class AddonMissingDelayedRequiredDependencyTest
       ForgeArchive archive = ShrinkWrap
                .create(ForgeArchive.class)
                .addBeansXML()
-               .addAsAddonDependencies(AddonDependencyEntry.create(AddonId.from("dependency", "2")));
+               .addAsAddonDependencies(AddonDependencyEntry.create("dependency", "2"));
 
       return archive;
    }

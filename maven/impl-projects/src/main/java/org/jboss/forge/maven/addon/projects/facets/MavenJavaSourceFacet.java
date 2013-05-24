@@ -184,7 +184,7 @@ public class MavenJavaSourceFacet extends AbstractFacet<Project> implements Java
             }
             catch (Exception e)
             {
-               throw new ContainerException(e);
+               throw new ContainerException("Could not set JavaSource Plugin Configuration in POM",e);
             }
          }
 

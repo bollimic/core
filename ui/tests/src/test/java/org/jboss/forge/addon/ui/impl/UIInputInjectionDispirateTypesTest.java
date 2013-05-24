@@ -15,7 +15,6 @@ import org.jboss.forge.addon.ui.input.UIInput;
 import org.jboss.forge.arquillian.Addon;
 import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
-import org.jboss.forge.furnace.addons.AddonId;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.forge.furnace.util.Callables;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -32,7 +31,7 @@ public class UIInputInjectionDispirateTypesTest
    {
       ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
                .addBeansXML()
-               .addAsAddonDependencies(AddonDependencyEntry.create(AddonId.from("org.jboss.forge.addon:ui", "2.0.0-SNAPSHOT")));
+               .addAsAddonDependencies(AddonDependencyEntry.create("org.jboss.forge.addon:ui", "2.0.0-SNAPSHOT"));
 
       return archive;
    }

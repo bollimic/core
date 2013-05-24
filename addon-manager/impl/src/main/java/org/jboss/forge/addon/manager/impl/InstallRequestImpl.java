@@ -17,8 +17,11 @@ import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
 import org.jboss.forge.addon.dependencies.Coordinate;
+import org.jboss.forge.addon.dependencies.Dependency;
+import org.jboss.forge.addon.dependencies.DependencyMetadata;
 import org.jboss.forge.addon.dependencies.DependencyNode;
 import org.jboss.forge.addon.dependencies.collection.DependencyNodeUtil;
+import org.jboss.forge.addon.dependencies.util.Dependencies;
 import org.jboss.forge.addon.manager.AddonManager;
 import org.jboss.forge.addon.manager.InstallRequest;
 import org.jboss.forge.addon.manager.impl.filters.DirectAddonFilter;
@@ -31,13 +34,16 @@ import org.jboss.forge.furnace.repositories.AddonRepository;
 import org.jboss.forge.furnace.repositories.MutableAddonRepository;
 import org.jboss.forge.furnace.util.Assert;
 import org.jboss.forge.furnace.util.Predicate;
+import org.jboss.forge.furnace.versions.VersionRange;
+import org.jboss.forge.furnace.versions.VersionRangeIntersection;
+import org.jboss.forge.furnace.versions.Versions;
 
 /**
  * When an addon is installed, another addons could be required. This object returns the necessary information for the
  * installation of an addon to succeed, like required addons and dependencies
- *
+ * 
  * @author <a href="mailto:ggastald@redhat.com">George Gastaldi</a>
- *
+ * 
  */
 public class InstallRequestImpl implements InstallRequest
 {
@@ -49,17 +55,18 @@ public class InstallRequestImpl implements InstallRequest
    private Stack<DependencyNode> optionalAddons = new Stack<DependencyNode>();
 
    private Logger log = Logger.getLogger(getClass().getName());
+   private DependencyMetadata requestedAddonMetadata;
 
    /**
     * Package-access constructor. Only AddonManager should be allowed to call this constructor.
-    *
-    * @param addonManager
     */
-   InstallRequestImpl(AddonManager addonManager, Furnace forge, DependencyNode requestedAddonNode)
+   InstallRequestImpl(AddonManager addonManager, Furnace forge, DependencyNode requestedAddonNode,
+            DependencyMetadata requestedAddonMetadata)
    {
       this.addonManager = addonManager;
       this.forge = forge;
       this.requestedAddonNode = requestedAddonNode;
+      this.requestedAddonMetadata = requestedAddonMetadata;
 
       /*
        * To return the addons on which this addon depends, we'll need to traverse the tree using the breadth first
@@ -136,7 +143,7 @@ public class InstallRequestImpl implements InstallRequest
                if (repository instanceof MutableAddonRepository)
                {
                   MutableAddonRepository mutableRepository = (MutableAddonRepository) repository;
-                  deploy(mutableRepository, requestedAddonId, requestedAddonNode);
+                  deploy(mutableRepository, requestedAddonId, requestedAddonNode, requestedAddonMetadata);
                   mutableRepository.enable(requestedAddonId);
                   break;
                }
@@ -181,7 +188,7 @@ public class InstallRequestImpl implements InstallRequest
             AddonId requestedAddonId = toAddonId(requestedAddonNode);
 
             MutableAddonRepository mutableRepository = (MutableAddonRepository) target;
-            deploy(mutableRepository, requestedAddonId, requestedAddonNode);
+            deploy(mutableRepository, requestedAddonId, requestedAddonNode, requestedAddonMetadata);
             mutableRepository.enable(requestedAddonId);
             return requestedAddonId;
          }
@@ -212,7 +219,8 @@ public class InstallRequestImpl implements InstallRequest
       return AddonId.from(coord.getGroupId() + ":" + coord.getArtifactId(), coord.getVersion(), apiVersion);
    }
 
-   private void deploy(MutableAddonRepository repository, AddonId addon, DependencyNode root)
+   private void deploy(MutableAddonRepository repository, AddonId addon, DependencyNode root,
+            DependencyMetadata requestedAddonMetadata)
    {
       List<File> resourceJars = toResourceJars(DependencyNodeUtil.select(root, new LocalResourceFilter(root)));
 
@@ -222,7 +230,7 @@ public class InstallRequestImpl implements InstallRequest
       }
       List<AddonDependencyEntry> addonDependencies =
                toAddonDependencies(DependencyNodeUtil
-                        .select(root.getChildren().iterator(), new DirectAddonFilter(root)));
+                        .select(root.getChildren().iterator(), new DirectAddonFilter(root)), requestedAddonMetadata);
 
       if (addonDependencies.isEmpty())
       {
@@ -232,7 +240,8 @@ public class InstallRequestImpl implements InstallRequest
       repository.deploy(addon, addonDependencies, resourceJars);
    }
 
-   private List<AddonDependencyEntry> toAddonDependencies(List<DependencyNode> dependencies)
+   private List<AddonDependencyEntry> toAddonDependencies(List<DependencyNode> dependencies,
+            DependencyMetadata requestedAddonMetadata)
    {
       List<AddonDependencyEntry> addonDependencies = new ArrayList<AddonDependencyEntry>();
       for (DependencyNode dep : dependencies)
@@ -247,7 +256,19 @@ public class InstallRequestImpl implements InstallRequest
             else if ("provided".equalsIgnoreCase(scopeType))
                export = false;
          }
-         AddonDependencyEntry addonDep = AddonDependencyEntry.create(toAddonId(dep), export, optional);
+
+         AddonId addonId = toAddonId(dep);
+         VersionRange range;
+         for (Dependency dependency : requestedAddonMetadata.getDependencies())
+         {
+            if (Dependencies.areEquivalent(dependency, dep.getDependency()))
+            {
+               String versionString = dependency.getCoordinate().getVersion();
+               range = Versions.parseRange(versionString);
+            }
+         }
+         AddonDependencyEntry addonDep = AddonDependencyEntry.create(addonId.getName(), range,
+                  addonId.getApiVersion(), export, optional);
          addonDependencies.add(addonDep);
       }
       return addonDependencies;

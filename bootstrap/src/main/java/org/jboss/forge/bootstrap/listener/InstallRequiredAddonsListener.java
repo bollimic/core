@@ -99,7 +99,7 @@ public class InstallRequiredAddonsListener implements ContainerLifecycleListener
    {
       try
       {
-         AddonManagerImpl addonManager = new AddonManagerImpl(forge, resolver);
+         AddonManagerImpl addonManager = new AddonManagerImpl(forge, resolver, resolver);
 
          for (AddonId addon : addons)
          {

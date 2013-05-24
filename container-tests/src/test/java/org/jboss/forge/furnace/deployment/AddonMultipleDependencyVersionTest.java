@@ -31,8 +31,8 @@ public class AddonMultipleDependencyVersionTest
                .create(ForgeArchive.class)
                .addBeansXML()
                .addAsAddonDependencies(
-                        AddonDependencyEntry.create(AddonId.from("dep", "1")),
-                        AddonDependencyEntry.create(AddonId.from("dep", "2"))
+                        AddonDependencyEntry.create("dep", "1"),
+                        AddonDependencyEntry.create("dep", "2")
                );
 
       return archive;

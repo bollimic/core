@@ -28,7 +28,6 @@ import org.jboss.forge.addon.ui.metadata.WithAttributes;
 import org.jboss.forge.arquillian.Addon;
 import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
-import org.jboss.forge.furnace.addons.AddonId;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.forge.furnace.util.Callables;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -48,7 +47,7 @@ public class UIInputInjectionTest
                .addBeansXML()
                .addClasses(Career.class, Gender.class)
                .addAsAddonDependencies(
-                        AddonDependencyEntry.create(AddonId.from("org.jboss.forge.addon:ui", "2.0.0-SNAPSHOT")));
+                        AddonDependencyEntry.create("org.jboss.forge.addon:ui", "2.0.0-SNAPSHOT"));
 
       return archive;
    }

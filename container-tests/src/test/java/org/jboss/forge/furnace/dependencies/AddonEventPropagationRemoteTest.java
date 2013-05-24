@@ -29,7 +29,7 @@ public class AddonEventPropagationRemoteTest
                .create(ForgeArchive.class)
                .addClasses(EventService.class, EventPayload1.class)
                .addBeansXML()
-               .addAsAddonDependencies(AddonDependencyEntry.create(AddonId.from("dependencyA", "1")));
+               .addAsAddonDependencies(AddonDependencyEntry.create("dependencyA", "1"));
 
       return archive;
    }

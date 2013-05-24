@@ -50,7 +50,7 @@ public class AddonManagerTest
                .create(ForgeArchive.class)
                .addBeansXML()
                .addAsAddonDependencies(
-                        AddonDependencyEntry.create(AddonId.from("org.jboss.forge.addon:addon-manager", "2.0.0-SNAPSHOT"))
+                        AddonDependencyEntry.create("org.jboss.forge.addon:addon-manager", "2.0.0-SNAPSHOT")
                );
 
       return archive;
@@ -87,10 +87,8 @@ public class AddonManagerTest
       Set<AddonDependencyEntry> dependencies = repository.getAddonDependencies(example);
       Assert.assertEquals(1, dependencies.size());
       AddonDependencyEntry dependency = dependencies.toArray(new AddonDependencyEntry[dependencies.size()])[0];
-      Assert.assertEquals("org.jboss.forge.addon:example2", dependency
-               .getId().getName());
-      Assert.assertEquals(new SingleVersion("2.0.0-SNAPSHOT"), dependency
-               .getId().getVersion());
+      Assert.assertEquals("org.jboss.forge.addon:example2", dependency.getName());
+      Assert.assertEquals(new SingleVersion("2.0.0-SNAPSHOT"), dependency.getVersion());
       Assert.assertTrue(dependency.isOptional());
       Assert.assertFalse(dependency.isExported());
 
@@ -128,9 +126,9 @@ public class AddonManagerTest
 
       for (AddonDependencyEntry dependency : dependencies)
       {
-         Assert.assertTrue("Not a valid addon dependency: " + dependency.getId().getName(),
-                  addonDependenciesIds.remove(dependency.getId().getName()));
-         Assert.assertEquals(new SingleVersion("2.0.0-SNAPSHOT"), dependency.getId().getVersion());
+         Assert.assertTrue("Not a valid addon dependency: " + dependency.getName(),
+                  addonDependenciesIds.remove(dependency.getName()));
+         Assert.assertEquals(new SingleVersion("2.0.0-SNAPSHOT"), dependency.getVersion());
       }
       Assert.assertTrue("Addons not detected as dependency: " + addonDependenciesIds, addonDependenciesIds.isEmpty());
 

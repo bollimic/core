@@ -26,8 +26,8 @@ public class ShellInstallTest
    public void test()
    {
       Furnace forge = new FurnaceImpl();
-      AddonManager addonManager = new AddonManagerImpl(forge, new MavenDependencyResolver(
-               new FileResourceFactory(), new MavenContainer()));
+      MavenDependencyResolver resolver = new MavenDependencyResolver(new FileResourceFactory(), new MavenContainer());
+      AddonManager addonManager = new AddonManagerImpl(forge, resolver, resolver);
       InstallRequest request = addonManager.install(AddonId.from("org.jboss.forge.addon:shell", "2.0.0-SNAPSHOT"));
       request.perform();
    }

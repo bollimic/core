@@ -50,4 +50,16 @@ public class EmptyVersionRange implements VersionRange
       return this;
    }
 
+   @Override
+   public boolean isMaxInclusive()
+   {
+      return false;
+   }
+
+   @Override
+   public boolean isMinInclusive()
+   {
+      return false;
+   }
+
 }

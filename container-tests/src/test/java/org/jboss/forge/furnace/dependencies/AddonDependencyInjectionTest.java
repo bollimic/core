@@ -30,7 +30,7 @@ public class AddonDependencyInjectionTest
                .addClasses(ConsumingService.class, TestExtension.class)
                .addBeansXML()
                .addAsServiceProvider(Extension.class, TestExtension.class)
-               .addAsAddonDependencies(AddonDependencyEntry.create(AddonId.from("dependency", "2")));
+               .addAsAddonDependencies(AddonDependencyEntry.create("dependency", "2"));
 
       return archive;
    }

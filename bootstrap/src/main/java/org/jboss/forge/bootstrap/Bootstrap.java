@@ -175,7 +175,7 @@ public class Bootstrap
       try
       {
          MavenDependencyResolver resolver = new MavenDependencyResolver(new FileResourceFactory(), new MavenContainer());
-         AddonManagerImpl addonManager = new AddonManagerImpl(forge, resolver);
+         AddonManagerImpl addonManager = new AddonManagerImpl(forge, resolver, resolver);
 
          AddonId addon;
          // This allows forge --install maven
