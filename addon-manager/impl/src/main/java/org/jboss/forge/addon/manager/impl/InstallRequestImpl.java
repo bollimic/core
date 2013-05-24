@@ -35,7 +35,7 @@ import org.jboss.forge.furnace.repositories.MutableAddonRepository;
 import org.jboss.forge.furnace.util.Assert;
 import org.jboss.forge.furnace.util.Predicate;
 import org.jboss.forge.furnace.versions.VersionRange;
-import org.jboss.forge.furnace.versions.VersionRangeIntersection;
+import org.jboss.forge.furnace.versions.MultipleVersionRange;
 import org.jboss.forge.furnace.versions.Versions;
 
 /**
@@ -264,7 +264,7 @@ public class InstallRequestImpl implements InstallRequest
             if (Dependencies.areEquivalent(dependency, dep.getDependency()))
             {
                String versionString = dependency.getCoordinate().getVersion();
-               range = Versions.parseRange(versionString);
+               range = Versions.parseVersionRange(versionString);
             }
          }
          AddonDependencyEntry addonDep = AddonDependencyEntry.create(addonId.getName(), range,

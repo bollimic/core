@@ -1,5 +1,8 @@
 package org.jboss.forge.furnace.versions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
  * 
@@ -61,8 +64,17 @@ public class DefaultVersionRange implements VersionRange
    @Override
    public VersionRange getIntersection(VersionRange... ranges)
    {
-      // TODO Auto-generated method stub
-      return null;sdf
+      List<VersionRange> list = new ArrayList<VersionRange>();
+      for (VersionRange range : ranges)
+      {
+         list.add(range);
+      }
+      MultipleVersionRange intersection = new MultipleVersionRange(list);
+      return new DefaultVersionRange(
+               intersection.getMin(),
+               intersection.isMinInclusive(),
+               intersection.getMax(),
+               intersection.isMaxInclusive());
    }
 
    @Override

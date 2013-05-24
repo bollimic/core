@@ -19,6 +19,7 @@
 package org.jboss.forge.furnace.versions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -29,11 +30,16 @@ import java.util.List;
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
  */
-public class VersionRangeIntersection
+public class MultipleVersionRange
 {
    private final List<VersionRange> ranges;
 
-   VersionRangeIntersection(List<VersionRange> ranges)
+   public MultipleVersionRange(VersionRange... ranges)
+   {
+      this(Arrays.asList(ranges));
+   }
+
+   MultipleVersionRange(List<VersionRange> ranges)
    {
       this.ranges = ranges;
    }
@@ -43,7 +49,7 @@ public class VersionRangeIntersection
       return ranges;
    }
 
-   public VersionRangeIntersection cloneOf()
+   public MultipleVersionRange cloneOf()
    {
       List<VersionRange> copiedRanges = null;
 
@@ -57,19 +63,19 @@ public class VersionRangeIntersection
          }
       }
 
-      return new VersionRangeIntersection(copiedRanges);
+      return new MultipleVersionRange(copiedRanges);
    }
 
    /**
-    * Creates and returns a new <code>VersionRangeIntersection</code> that is a intersection of this version range and
-    * the specified version range.
+    * Creates and returns a new <code>MultipleVersionRange</code> that is a intersection of this version range and the
+    * specified version range.
     * <p>
     * Note: Precedence is given to the recommended version from this version range over the recommended version from the
     * specified version range.
     * </p>
     * 
-    * @param intersection the <code>VersionRangeIntersection</code> that will be used to restrict this version range.
-    * @return the <code>VersionRangeIntersection</code> that is a intersection of this version range and the specified
+    * @param intersection the <code>MultipleVersionRange</code> that will be used to restrict this version range.
+    * @return the <code>MultipleVersionRange</code> that is a intersection of this version range and the specified
     *         version range.
     *         <p>
     *         The ranges of the returned version range will be an intersection of the ranges of this version range and
@@ -84,9 +90,9 @@ public class VersionRangeIntersection
     *         recommended version can be obtained, the returned version range's recommended version is set to
     *         <code>null</code>.
     *         </p>
-    * @throws NullPointerException if the specified <code>VersionRangeIntersection</code> is <code>null</code>.
+    * @throws NullPointerException if the specified <code>MultipleVersionRange</code> is <code>null</code>.
     */
-   public VersionRangeIntersection intersect(VersionRangeIntersection intersection)
+   public MultipleVersionRange intersect(MultipleVersionRange intersection)
    {
       List<VersionRange> r1 = this.ranges;
       List<VersionRange> r2 = intersection.ranges;
@@ -106,7 +112,7 @@ public class VersionRangeIntersection
          throw new VersionException("Intersected incompatible version ranges");
       }
 
-      return new VersionRangeIntersection(ranges);
+      return new MultipleVersionRange(ranges);
    }
 
    private List<VersionRange> intersection(List<VersionRange> r1, List<VersionRange> r2)
@@ -278,9 +284,25 @@ public class VersionRangeIntersection
 
    /**
     * Return the highest {@link Version} of the given {@link List} of versions that satisfies all {@link VersionRange}
-    * instances in this {@link VersionRangeIntersection}; otherwise, return <code>null</code> if no match was found.
+    * instances in this {@link MultipleVersionRange}; otherwise, return <code>null</code> if no match was found.
     */
-   public Version matchHighest(List<Version> versions)
+   private Version getHighestMatch(List<Version> versions)
+   {
+      Version matched = null;
+      for (Version version : versions)
+      {
+         if (includes(version))
+         {
+            if (matched == null || version.compareTo(matched) > 0)
+            {
+               matched = version;
+            }
+         }
+      }
+      return matched;
+   }
+
+   private Version matchLowestMatch(List<Version> versions)
    {
       Version matched = null;
       for (Version version : versions)
@@ -315,11 +337,11 @@ public class VersionRangeIntersection
       {
          return true;
       }
-      if (!(obj instanceof VersionRangeIntersection))
+      if (!(obj instanceof MultipleVersionRange))
       {
          return false;
       }
-      VersionRangeIntersection other = (VersionRangeIntersection) obj;
+      MultipleVersionRange other = (MultipleVersionRange) obj;
 
       boolean equals = (ranges == other.ranges)
                || ((ranges != null) && ranges.equals(other.ranges));
@@ -332,5 +354,57 @@ public class VersionRangeIntersection
       int hash = 7;
       hash = 31 * hash + (ranges == null ? 0 : ranges.hashCode());
       return hash;
+   }
+
+   public Version getMin()
+   {
+      VersionRange min = null;
+      for (VersionRange range : ranges)
+      {
+         if (min == null || range.getMin().compareTo(min.getMin()) < 0)
+         {
+            min = range;
+         }
+      }
+      return min == null ? null : min.getMin();
+   }
+
+   public boolean isMinInclusive()
+   {
+      VersionRange min = null;
+      for (VersionRange range : ranges)
+      {
+         if (min == null || range.getMin().compareTo(min.getMin()) < 0)
+         {
+            min = range;
+         }
+      }
+      return min == null ? false : min.isMinInclusive();
+   }
+
+   public Version getMax()
+   {
+      VersionRange max = null;
+      for (VersionRange range : ranges)
+      {
+         if (max == null || range.getMax().compareTo(max.getMax()) > 0)
+         {
+            max = range;
+         }
+      }
+      return max == null ? null : max.getMax();
+   }
+
+   public boolean isMaxInclusive()
+   {
+      VersionRange max = null;
+      for (VersionRange range : ranges)
+      {
+         if (max == null || range.getMax().compareTo(max.getMax()) > 0)
+         {
+            max = range;
+         }
+      }
+      return max == null ? false : max.isMaxInclusive();
    }
 }

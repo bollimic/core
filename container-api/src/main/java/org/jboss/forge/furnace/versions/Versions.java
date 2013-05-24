@@ -7,6 +7,8 @@
 package org.jboss.forge.furnace.versions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -74,10 +76,10 @@ public class Versions
     * </ul>
     * 
     * @param intersection string representation of a version or version range
-    * @return a new {@link VersionRangeIntersection} object that represents the specification
+    * @return a new {@link MultipleVersionRange} object that represents the specification
     * @throws VersionException
     */
-   public static VersionRangeIntersection parseIntersection(String intersection) throws VersionException
+   public static MultipleVersionRange parseMultipleVersionRange(String intersection) throws VersionException
    {
       Assert.notNull(intersection, "Version range string must not be null.");
 
@@ -132,7 +134,8 @@ public class Versions
       {
          if (ranges.size() > 0)
          {
-            throw new VersionException("Only fully-qualified sets allowed in multiple version range scenario: " + intersection);
+            throw new VersionException("Only fully-qualified sets allowed in multiple version range scenario: "
+                     + intersection);
          }
          else
          {
@@ -140,7 +143,7 @@ public class Versions
          }
       }
 
-      return new VersionRangeIntersection(ranges);
+      return new MultipleVersionRange(ranges);
    }
 
    public static VersionRange parseVersionRange(String range) throws VersionException
@@ -191,5 +194,34 @@ public class Versions
       }
 
       return result;
+   }
+
+   public static VersionRange intersection(VersionRange... ranges)
+   {
+      return intersection(Arrays.asList(ranges));
+   }
+
+   public static VersionRange intersection(Collection<VersionRange> ranges)
+   {
+      Version min = null;
+      Version max = null;
+      boolean minInclusive = false;
+      boolean maxInclusive = false;
+
+      for (VersionRange range : ranges)
+      {
+         if (min == null || range.getMin().compareTo(min) > 0)
+         {
+            min = range.getMin();
+            minInclusive = range.isMinInclusive();
+         }
+         if (max == null || range.getMax().compareTo(max) < 0)
+         {
+            max = range.getMax();
+            maxInclusive = range.isMaxInclusive();
+         }
+      }
+
+      return new DefaultVersionRange(min, minInclusive, max, maxInclusive);
    }
 }
