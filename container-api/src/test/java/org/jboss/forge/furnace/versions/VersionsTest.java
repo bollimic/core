@@ -51,7 +51,6 @@ public class VersionsTest
       Assert.assertEquals(new SingleVersion("7"), intersection.getMax());
       Assert.assertTrue(intersection.isMinInclusive());
       Assert.assertFalse(intersection.isMaxInclusive());
-
    }
 
 }
