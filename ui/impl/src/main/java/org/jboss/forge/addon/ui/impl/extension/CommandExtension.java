@@ -29,6 +29,8 @@ import org.jboss.forge.addon.ui.UICommand;
 import org.jboss.forge.addon.ui.impl.InputComponentFactory;
 import org.jboss.forge.addon.ui.input.InputComponent;
 import org.jboss.forge.addon.ui.metadata.WithAttributes;
+import org.jboss.forge.furnace.services.Exported;
+import org.jboss.forge.furnace.util.Annotations;
 import org.jboss.forge.furnace.util.BeanManagerUtils;
 import org.jboss.forge.furnace.util.cdi.BeanBuilder;
 import org.jboss.forge.furnace.util.cdi.ContextualLifecycle;
@@ -83,8 +85,7 @@ public class CommandExtension implements Extension
                            String paramName = "param" + parameter.getPosition();
                            Class<?> paramType = (Class<?>) parameter.getBaseType();
                            InputComponent<?, ?> input;
-                           // TODO: Add more conditions in here
-                           if (paramType.isEnum())
+                           if (paramType.isEnum() || Annotations.isAnnotationPresent(paramType, Exported.class))
                            {
                               input = factory.createSelectOne(paramName, paramType, withAttributes);
                            }

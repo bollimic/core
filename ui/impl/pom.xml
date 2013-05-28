@@ -12,7 +12,7 @@
    <dependencies>
       <dependency>
          <groupId>org.jboss.forge.furnace</groupId>
-         <artifactId>furnace-api</artifactId>
+         <artifactId>furnace</artifactId>
          <scope>provided</scope>
       </dependency>
       <dependency>
