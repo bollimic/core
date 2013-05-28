@@ -110,7 +110,6 @@
             <module>parser-java</module>
             <module>resources</module>
             <module>ui</module>
-            <module>ui-hints</module>
             <module>convert</module>
          </modules>
       </profile>

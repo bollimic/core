@@ -12,9 +12,12 @@ package org.jboss.forge.addon.ui.hints;
  * interface provider.
  * 
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
+ * @author <a href="mailto:ggastald@redhat.com">George Gastaldi</a>
  */
-public enum InputTypes implements InputType
+public enum InputType
 {
+   DEFAULT,
+
    CHECKBOX,
 
    TEXTBOX,

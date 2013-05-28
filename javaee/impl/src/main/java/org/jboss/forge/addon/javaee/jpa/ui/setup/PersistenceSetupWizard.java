@@ -5,7 +5,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.jboss.forge.addon.javaee.jpa.ui;
+package org.jboss.forge.addon.javaee.jpa.ui.setup;
 
 import javax.inject.Inject;
 
@@ -105,31 +105,42 @@ public class PersistenceSetupWizard implements UIWizard
    @Override
    public void validate(UIValidationContext validator)
    {
-
+      // NOOP
    }
 
    @Override
-   public Result execute(UIContext context) throws Exception
+   public Result execute(final UIContext context) throws Exception
    {
-      context.setAttribute(PersistenceProvider.class, providers.getValue());
-      context.setAttribute(PersistenceContainer.class, containers.getValue());
+      applyUIValues(context);
       return Results.success();
    }
 
    @Override
    public NavigationResult next(UIContext context) throws Exception
    {
-      context.setAttribute(PersistenceProvider.class, providers.getValue());
-      PersistenceContainer container = containers.getValue();
-      context.setAttribute(PersistenceContainer.class, container);
-      if (container.isJTASupported())
-      {
-         return Results.navigateTo(PersistenceSetupDataSourceStep.class);
-      }
-      else
-      {
-         return Results.navigateTo(PersistenceSetupJDBCDataStep.class);
-      }
+      applyUIValues(context);
+      return Results.navigateTo(PersistenceSetupConnectionStep.class);
    }
 
+   private void applyUIValues(final UIContext context)
+   {
+      context.setAttribute(PersistenceProvider.class, providers.getValue());
+      context.setAttribute(PersistenceContainer.class, containers.getValue());
+      context.setAttribute("ConfigureMetadata", configureMetadata.getValue());
+   }
+
+   public UISelectOne<PersistenceContainer> getContainers()
+   {
+      return containers;
+   }
+
+   public UISelectOne<PersistenceProvider> getProviders()
+   {
+      return providers;
+   }
+
+   public UIInput<Boolean> getConfigureMetadata()
+   {
+      return configureMetadata;
+   }
 }

@@ -17,7 +17,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.forge.addon.convert.Converter;
 import org.jboss.forge.addon.ui.facets.HintsFacet;
 import org.jboss.forge.addon.ui.hints.InputType;
-import org.jboss.forge.addon.ui.hints.InputTypes;
 import org.jboss.forge.addon.ui.input.InputComponent;
 import org.jboss.forge.addon.ui.input.UICompleter;
 import org.jboss.forge.addon.ui.input.UIInput;
@@ -199,11 +198,11 @@ public class UIInputInjectionTest
    {
       HintsFacet hints = firstName.getFacet(HintsFacet.class);
       InputType inputType = hints.getInputType();
-      Assert.assertNull(inputType);
+      Assert.assertEquals(InputType.DEFAULT, inputType);
 
-      hints.setInputType(InputTypes.TEXTAREA);
+      hints.setInputType(InputType.TEXTAREA);
       Assert.assertSame(firstName, firstName);
-      Assert.assertSame(InputTypes.TEXTAREA, hints.getInputType());
+      Assert.assertSame(InputType.TEXTAREA, hints.getInputType());
    }
 
    @Test

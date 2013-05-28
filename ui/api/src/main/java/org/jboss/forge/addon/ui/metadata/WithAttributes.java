@@ -12,16 +12,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.jboss.forge.addon.ui.hints.InputType;
 import org.jboss.forge.addon.ui.input.InputComponent;
 
 /**
  * Allows configuration of {@link InputComponent} injected fields
- *
+ * 
  * @author <a href="mailto:ggastald@redhat.com">George Gastaldi</a>
- *
+ * 
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
+@Target({ ElementType.FIELD, ElementType.PARAMETER })
 public @interface WithAttributes
 {
    /**
@@ -43,4 +44,9 @@ public @interface WithAttributes
     * Is this input enabled?
     */
    boolean enabled() default true;
+
+   /**
+    * The InputType for this {@link InputComponent}
+    */
+   InputType type() default InputType.DEFAULT;
 }
