@@ -7,6 +7,7 @@
 package org.jboss.forge.addon.projects;
 
 import org.jboss.forge.addon.resource.DirectoryResource;
+import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.furnace.services.Exported;
 import org.jboss.forge.furnace.spi.ListenerRegistration;
 import org.jboss.forge.furnace.util.Predicate;
@@ -20,16 +21,16 @@ import org.jboss.forge.furnace.util.Predicate;
 public interface ProjectFactory
 {
    /**
-    * Locate a {@link Project} in the ancestry of the given {@link DirectoryResource}. Return <code>null</code> if no
+    * Locate a {@link Project} in the ancestry of the given {@link FileResource}. Return <code>null</code> if no
     * {@link Project} could be located.
     */
-   public Project findProject(final DirectoryResource target);
+   public Project findProject(final FileResource<?> target);
 
    /**
-    * Locate a {@link Project} in the ancestry of the given {@link DirectoryResource}. Filter results using the given
+    * Locate a {@link Project} in the ancestry of the given {@link FileResource}. Filter results using the given
     * {@link Predicate}. Return <code>null</code> if no {@link Project} could be located.
     */
-   public Project findProject(final DirectoryResource target, Predicate<Project> filter);
+   public Project findProject(final FileResource<?> target, Predicate<Project> filter);
 
    /**
     * Create a {@link Project} in the specified {@link DirectoryResource}.

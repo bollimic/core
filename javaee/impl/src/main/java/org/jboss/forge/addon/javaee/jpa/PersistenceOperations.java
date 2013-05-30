@@ -27,7 +27,7 @@ import org.jboss.forge.addon.parser.java.resources.JavaResource;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.resource.DirectoryResource;
-import org.jboss.forge.furnace.util.Strings;
+import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.parser.java.Field;
 import org.jboss.forge.parser.java.JavaClass;
 import org.jboss.forge.parser.java.util.Refactory;
@@ -43,8 +43,8 @@ import org.jboss.shrinkwrap.descriptor.api.persistence20.PersistenceUnitTransact
  */
 public class PersistenceOperations
 {
-   private static final String DEFAULT_UNIT_NAME = "forge-default";
-   private static final String DEFAULT_UNIT_DESC = "Forge Persistence Unit";
+   public static final String DEFAULT_UNIT_NAME = "forge-default";
+   public static final String DEFAULT_UNIT_DESC = "Forge Persistence Unit";
 
    @Inject
    private ProjectFactory projectFactory;
@@ -62,8 +62,9 @@ public class PersistenceOperations
     * @param dataSource
     * @param configureMetadata
     */
-   public void setup(Project project, JPADataSource dataSource, boolean configureMetadata)
+   public FileResource<?> setup(String unitName, Project project, JPADataSource dataSource, boolean configureMetadata)
    {
+      FileResource<?> result = null;
       if (project != null)
       {
          PersistenceFacet facet = facetFactory.install(PersistenceFacet.class, project);
@@ -71,7 +72,7 @@ public class PersistenceOperations
          PersistenceProvider provider = dataSource.getProvider();
          PersistenceDescriptor config = facet.getConfig();
          PersistenceUnit<PersistenceDescriptor> unit = config.createPersistenceUnit();
-         unit.name(DEFAULT_UNIT_NAME).description(DEFAULT_UNIT_DESC);
+         unit.name(unitName).description(DEFAULT_UNIT_DESC);
          unit.transactionType(container.isJTASupported() ? PersistenceUnitTransactionType._JTA
                   : PersistenceUnitTransactionType._RESOURCE_LOCAL);
          unit.provider(provider.getProvider());
@@ -79,11 +80,13 @@ public class PersistenceOperations
          container.setupConnection(unit, dataSource);
          provider.configure(unit, dataSource);
          facet.saveConfig(config);
+         result = facet.getConfigFile();
       }
       if (configureMetadata)
       {
          facetFactory.install(PersistenceMetaModelFacet.class, project);
       }
+      return result;
    }
 
    /**
@@ -120,9 +123,7 @@ public class PersistenceOperations
             GenerationType idStrategy)
    {
       JavaClass javaClass = createJavaClass(entityName, entityPackage, idStrategy);
-      String pkg = Strings.isNullOrEmpty(javaClass.getPackage()) ? "" : javaClass.getPackage() + ".";
-      String className = pkg + javaClass.getName();
-      JavaResource javaResource = getJavaResource(target, className);
+      JavaResource javaResource = getJavaResource(target, javaClass.getName());
       javaResource.setContents(javaClass);
       return javaResource;
    }
