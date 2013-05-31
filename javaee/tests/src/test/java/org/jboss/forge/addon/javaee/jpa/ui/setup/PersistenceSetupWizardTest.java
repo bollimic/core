@@ -26,7 +26,6 @@ import org.jboss.forge.addon.ui.wizard.UIWizard;
 import org.jboss.forge.arquillian.Addon;
 import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
-import org.jboss.forge.furnace.addons.AddonId;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.forge.ui.test.WizardListener;
 import org.jboss.forge.ui.test.WizardTester;
@@ -48,7 +47,7 @@ public class PersistenceSetupWizardTest
    public static ForgeArchive getDeployment()
    {
       return JavaEETestHelper.getDeployment().addAsAddonDependencies(
-               AddonDependencyEntry.create(AddonId.from("org.jboss.forge.addon:ui", "2.0.0-SNAPSHOT")));
+               AddonDependencyEntry.create("org.jboss.forge.addon:ui", "2.0.0-SNAPSHOT"));
    }
 
    @Inject
